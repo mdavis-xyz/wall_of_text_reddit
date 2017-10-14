@@ -24,18 +24,17 @@ def generate_reply(submission):
 def check_subreddit(subreddit, posts_replied_to):
 
 
-    for submission in subreddit.hot(limit=500):
+    for submission in subreddit.hot(limit=50):
         if submission.is_self and \
            (submission.id not in posts_replied_to) and \
            eligible_body(submission.selftext):
             length = max_paragraph_size(submission.selftext)
             print('Post %s has length %d' % \
                   (submission.id,length))
-            lengths.append(length)
-            print('Reply to this post:\n%s' % submission.url)
+            print('Replying to this post:\n%s' % submission.url)
 
-            # reply_msg = generate_reply(submission)
-            # submission.reply(reply_msg)
+            reply_msg = generate_reply(submission)
+            submission.reply(reply_msg)
 
             # append this post ID to the list
             posts_replied_to.append(submission.id)
@@ -44,7 +43,7 @@ def check_subreddit(subreddit, posts_replied_to):
 
 def main():
     reddit = praw.Reddit('bot1')
-    subreddits = ['sex','relationship_advice']
+    subreddits = ['relationship_advice']
 
     if not os.path.isfile(post_replied_fname):
         posts_replied_to = []
