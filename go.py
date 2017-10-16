@@ -24,22 +24,35 @@ def generate_reply(submission):
 def check_subreddit(subreddit, posts_replied_to):
 
 
+    skipped_posts = 0
     for submission in subreddit.hot(limit=50):
         if submission.is_self and \
            (submission.id not in posts_replied_to) and \
            eligible_body(submission.selftext):
             length = max_paragraph_size(submission.selftext)
+            print('-'*6)
             print('Post %s has length %d' % \
                   (submission.id,length))
             print('Replying to this post:\n%s' % submission.url)
 
             reply_msg = generate_reply(submission)
-            submission.reply(reply_msg)
 
             # append this post ID to the list
             posts_replied_to.append(submission.id)
             with open(post_replied_fname, "a") as myfile:
                 myfile.write(submission.id + '\n')
+
+            reply_obj = submission.reply(reply_msg)
+            print('The return value of submission reply was\n')
+            try:
+                pp.pprint(reply_obj)
+            except:
+                print('woops, couldnt print it')
+            print('-'*6)
+        else:
+            skipped_posts += 1
+
+    print('Skipped %d posts' % skipped_posts)
 
 def main():
     reddit = praw.Reddit('bot1')
@@ -68,4 +81,7 @@ def unit_tests():
     print('Unit Tests Passed')
 
 if __name__ == '__main__':
+    print('\n\nTriggered\n')
+    unit_tests()
     main()
+    print('\nDone!\n')
