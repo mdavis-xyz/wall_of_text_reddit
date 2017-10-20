@@ -1,6 +1,6 @@
 env/
 praw.ini
-data/log.txt
+data/*log.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
