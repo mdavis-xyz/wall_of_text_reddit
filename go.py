@@ -8,7 +8,7 @@ post_replied_fname = './data/post_replied.txt'
 
 
 def generate_reply(submission):
-    reply_template_fname = './data/too_long.md'
+    reply_template_fname = './data/templates/too_long.md'
     with open(reply_template_fname,'r') as f:
         reply_msg = f.read()
     return(reply_msg)
@@ -22,7 +22,7 @@ def check_subreddit(subreddit, posts_replied_to):
 
 
     skipped_posts = 0
-    for submission in subreddit.hot(limit=50):
+    for submission in subreddit.hot(limit=500):
         if submission.is_self and \
            (submission.id not in posts_replied_to) and \
            mylib.eligible_body(submission.selftext):
