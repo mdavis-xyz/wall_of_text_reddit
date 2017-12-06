@@ -16,16 +16,25 @@ def generate_reply(submission):
 def save_body(submission):
     fname = 'data/original_posts/%s.md' % submission.id
     with open(fname,'w') as f:
-        f.write(submission.body)
+        try:
+            f.write(submission.selftext)
+        except AttributeError as e:
+            print('submission attributes:\n   ')
+            print('\n   '.join(sorted(dir(submission))))
+            raise(e)
 
 def check_subreddit(subreddit, posts_replied_to):
 
 
     skipped_posts = 0
-    for submission in subreddit.hot(limit=500):
-        if submission.is_self and \
-           (submission.id not in posts_replied_to) and \
-           mylib.eligible_body(submission.selftext):
+    for submission in subreddit.hot(limit=50):
+        if not submission.is_self:
+            print('   post is not self post')
+            skipped_posts += 1
+        elif submission.id in posts_replied_to:
+            print('   have already replied to this post')
+            skipped_posts += 1
+        elif mylib.eligible_body(submission.selftext):
             length = mylib.max_paragraph_size(submission.selftext)
             print('-'*6)
             print('Post %s has length %d' % \
@@ -49,6 +58,10 @@ def check_subreddit(subreddit, posts_replied_to):
                 print('woops, couldnt print it')
             print('-'*6)
         else:
+            #print('   new but ineligible post')
+            #print('      %d characters long' % len(submission.selftext))
+            #print('      max paragraph %d words long' % mylib.max_paragraph_size(submission.selftext))
+            #print('      %s' % submission.url)
             skipped_posts += 1
 
     print('Skipped %d posts' % skipped_posts)
